@@ -23,6 +23,7 @@ export class User {
         } catch (e) {
             throw new Error(e);
         } finally {
+            // Poolを使用するときはend()しない(するとエラーでる)
             // await db.end();
         }
     }
@@ -48,12 +49,14 @@ export class User {
         } catch (e) {
             throw new Error(e);
         } finally {
+            // Poolを使用するときはend()しない(するとエラーでる)
             // await db.end();
         }
     }
 
     public static async insert(user: IUser) {
 
+        // 練習用なのでとりあえずここでチェック
         if (user === null ||
             typeof user.userId === 'undefined' ||
             typeof user.userName === 'undefined' ||
@@ -85,12 +88,14 @@ export class User {
         } catch (e) {
             throw new Error(e);
         } finally {
+            // Poolを使用するときはend()しない(するとエラーでる)
             // await db.end();
         }
     }
 
     public static async update(user: IUser) {
 
+        // 練習用なのでとりあえずここでチェック
         if (typeof user.userId === "undefined" ||
             typeof user.userName === "undefined" ||
             typeof user.updateUser === "undefined") {
@@ -114,6 +119,7 @@ export class User {
         } catch (e) {
             throw new Error(e);
         } finally {
+            // Poolを使用するときはend()しない(するとエラーでる)
             // await db.end();
         }
     }
@@ -134,6 +140,7 @@ export class User {
         } catch (e) {
             throw new Error(e);
         } finally {
+            // Poolを使用するときはend()しない(するとエラーでる)
             // await db.end();
         }
     }
