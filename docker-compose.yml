@@ -1,21 +1,34 @@
 version: '3'
 services:
+  # データベースコンテナ
   db:
+    # ビルドするDockerfile
     build:
+      # パスを指定
       context: ./postgres
+      # Dockerfileを指定
       dockerfile: Dockerfile
+    # 作成するイメージ名
     image: postgres
+    # 作成するコンテナ名
     container_name: postgres
+    # 環境変数
     environment:
+      # Postgresのパスワード ※ デフォルトでPostgresユーザーが作成されるためパスワードのみ指定
       POSTGRES_PASSWORD: "postgres"
+      # コンテナ起動時に作成するDB
       POSTGRES_DB: "testdb"
+      # ロケールを指定(するはずがうまくいってない…)
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ja_JP.UTF-8"
+    # ポートフォワーディングの設定
     ports:
       - 5432:5432
+    # コンテナ起動時に実行するSQLとデータの永続化
     volumes:
       - ./postgres/init_sql://docker-entrypoint-initdb.d/
       - test-pgdata://var/lib/postgresql/data
 
+  # WebAPIコンテナ
   app:
     build:
       context: ./app
@@ -23,12 +36,15 @@ services:
     image: nodeapp
     container_name: nodeapp
     environment:
+      # 接続先DBのURL ※ホストはservice名になる
       DATABASE_URL: postgresql://postgres:postgres@db:5432/testdb
+    # Trueにすることでコンテナを起動したままにする
     tty: true
     ports:
       - 3000:3000
     volumes:
       - ./app://home/app
+    # 結び付けるコンテナを指定する
     depends_on:
       - db
 
