@@ -18,14 +18,21 @@ services:
       POSTGRES_PASSWORD: "postgres"
       # コンテナ起動時に作成するDB
       POSTGRES_DB: "testdb"
-      # ロケールを指定(するはずがうまくいってない…)
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ja_JP.UTF-8"
-    # ポートフォワーディングの設定
+    # DockerfileのCMDに値する。コンテナ起動時に実行される。
+    # postmasterコマンドラインの実行。 -c: コマンドを実行 config_file="": 設定ファイルの指定
+    # 参考リンク: [https://www.postgresql.jp/document/9.6/html/config-setting.html#idm401073504528]
+    command: postgres -c config_file="/etc/postgresql.conf"
+    # ポートフォワーディングの設定 <ホスト側>:<コンテナ側>
     ports:
       - 5432:5432
     # コンテナ起動時に実行するSQLとデータの永続化
     volumes:
+      # docker-entrypoint-initdb.d配下にShellScriptまたはSQLファイルをマウントするとコンテナ起動時に実行してくれる。
+      # ちなみにデータ永続化のvolumeを設定しているとvolumeが優先される。
       - ./postgres/init_sql://docker-entrypoint-initdb.d/
+      # postgresの設定ファイルをマウントする
+      - ./postgres/postgresql.conf://etc/postgresql.conf
+      # postgresのデータ永続化のためのマウント先
       - test-pgdata://var/lib/postgresql/data
 
   # WebAPIコンテナ
@@ -38,6 +45,8 @@ services:
     environment:
       # 接続先DBのURL ※ホストはservice名になる
       DATABASE_URL: postgresql://postgres:postgres@db:5432/testdb
+      # Timezoneを日本時間に設定する
+      TZ: Asia/Tokyo
     # Trueにすることでコンテナを起動したままにする
     tty: true
     ports:
@@ -48,6 +57,8 @@ services:
     depends_on:
       - db
 
+# Windowsでvolumeをマウントさせるには一旦 docker volume create --name <volume-name>で作成してからここで指定する必要がある。
+# 今回は docker volume create --name test-pgdataで作成したのでこの名前を指定。
 volumes:
   test-pgdata:
     external: true
