@@ -6,26 +6,12 @@ import { Pool } from "pg";
  */
 export class Postgres {
 
-    private static _instance: Postgres;
     private pool: Pool;
 
     constructor() {
         this.pool = new Pool({
             connectionString: process.env.DATABASE_URL,
         });
-    }
-
-    /**
-     * Postgresインスタンスの取得
-     */
-    public static get instance(): Postgres {
-
-        if (!this._instance) {
-            this._instance = new Postgres();
-            console.log('Initial instantiation');
-        }
-
-        return this._instance;
     }
 
     /**

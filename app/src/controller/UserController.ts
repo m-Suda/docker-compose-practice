@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/UserService";
-import { IUser } from "../interface/IUser";
+import { RequestUser } from "../type/RequestUser";
 
 export class UserController {
 
@@ -41,7 +41,7 @@ export class UserController {
     }
 
     public static async register(req: Request, res: Response) {
-        const user: IUser = req.body;
+        const user: RequestUser = req.body;
 
         try {
             await UserService.insert(user);
@@ -61,7 +61,7 @@ export class UserController {
     }
 
     public static async modify(req: Request, res: Response) {
-        const user: IUser = req.body;
+        const user: RequestUser = req.body;
         user.userId = req.params.userId;
 
         try {
